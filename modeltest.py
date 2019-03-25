@@ -2,8 +2,10 @@ from PIL import Image, ImageFilter
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-def imageprepare():
-    im = Image.open('C:/Users/Jonathan/Desktop/num/1.png') #读取的图片所在路径，注意是28*28像素
+number = 0
+
+def imageprepare(number):
+    im = Image.open('C:/Users/Jonathan/Desktop/num/{}.png'.format(number)) #读取的图片所在路径，注意是28*28像素
     plt.imshow(im)  #显示需要识别的图片
     plt.show()
     im = im.convert('L')
@@ -11,7 +13,7 @@ def imageprepare():
     tva = [(255-x)*1.0/255.0 for x in tv]
     return tva
 
-result=imageprepare()
+result=imageprepare(number)
 x = tf.placeholder(tf.float32, [None, 784])
 
 y_ = tf.placeholder(tf.float32, [None, 10])
@@ -70,7 +72,11 @@ with tf.Session() as sess:
     saver.restore(sess, "C:/Users/Jonathan/Desktop/model/model.ckpt") #使用模型，参数和之前的代码保持一致
 
     prediction=tf.argmax(y_conv,1)
-    predint=prediction.eval(feed_dict={x: [result],keep_prob: 1.0}, session=sess)
+    for i in range(10):
+        result = imageprepare(i)
+        predint = prediction.eval(feed_dict={x: [result], keep_prob: 1.0}, session=sess)
+        print('NO.{} recognize result:'.format(i),  predint[0])
 
-    print('识别结果:')
-    print(predint[0])
+
+
+
